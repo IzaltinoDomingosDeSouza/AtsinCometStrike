@@ -1,0 +1,31 @@
+# --- .NET / Visual Studio ---
+bin/
+obj/
+*.user
+*.userosscache
+*.sln.docstates
+
+# --- MonoGame Specific ---
+# Ignore the built content (the .xnb files), but keep your source assets
+Content/bin/
+Content/obj/
+
+# --- IDEs & Editors ---
+.vs/
+.vscode/
+.idea/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+.editorconfig
+
+# --- OS Generated ---
+.DS_Store
+Thumbs.db
+
+# --- Build Results ---
+*.exe
+*.dll
+*.pdb
+*.apphost
