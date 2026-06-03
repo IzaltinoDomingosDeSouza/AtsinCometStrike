@@ -23,9 +23,8 @@ public class MainGame : Game
     private SpriteBatch _spriteBatch;
     
     private Texture2D _gameTexture;
-	private Vector2 _spaceshipPosition;
-	private Vector2 _spaceshipOrigin;
-    private float _spaceshipAngle;
+    
+    private Spaceship _spaceship;
     
     public MainGame()
     {
@@ -38,10 +37,8 @@ public class MainGame : Game
 
     protected override void Initialize()
     {
-		_spaceshipOrigin = new Vector2(Global.SpaceshipAtlas.Width / 2f, Global.SpaceshipAtlas.Height / 2f);
-        _spaceshipPosition = new Vector2(Global.SpaceshipAtlas.Width, Global.ScreenSize.Y / 2f);
-		_spaceshipAngle = MathHelper.ToRadians(90);
-		
+		_spaceship = new Spaceship();
+		_spaceship.Initialize(Global.SpaceshipAtlas,new Vector2(100,100),MathHelper.ToRadians(-90));
         base.Initialize();
     }
 
@@ -60,6 +57,8 @@ public class MainGame : Game
 
         KeyboardState kState = Keyboard.GetState();
         
+        _spaceship.Update(elapsed);
+        
         base.Update(gameTime);
     }
     protected override void Draw(GameTime gameTime)
@@ -68,7 +67,7 @@ public class MainGame : Game
 
         _spriteBatch.Begin();
         
-        _spriteBatch.Draw(_gameTexture, _spaceshipPosition, Global.SpaceshipAtlas, Color.White, _spaceshipAngle, _spaceshipOrigin, 1.0f, SpriteEffects.FlipVertically, 0f);
+        _spaceship.Draw(_gameTexture,_spriteBatch);
         
         _spriteBatch.End();
 
