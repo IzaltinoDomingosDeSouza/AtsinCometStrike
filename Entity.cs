@@ -27,7 +27,7 @@ public abstract class Entity
     }
     
 	public virtual void Update(float deltaTime) { }
-	
+    public virtual void OnCollision(Entity other) {}
 	public virtual void Draw(Texture2D texture, SpriteBatch spriteBatch)
     {
     		if(IsActive)

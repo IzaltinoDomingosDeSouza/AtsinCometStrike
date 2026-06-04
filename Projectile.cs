@@ -7,6 +7,7 @@ namespace AtsinCometStrike;
 public class Projectile : Entity
 {
 	private float movementSpeed = 250f;
+	public int DemageAmount = 25;
 	
 	public override void Initialize(Rectangle atlas, Vector2 Position, float Angle = 0)
     {
@@ -14,6 +15,8 @@ public class Projectile : Entity
     }
 	public override void Update(float deltaTime)
     {
+    		if(!IsActive) return;
+    	
         base.Update(deltaTime);
         Position.X += movementSpeed * deltaTime;
         
@@ -21,6 +24,10 @@ public class Projectile : Entity
 	    {
 	    		Destroy();
 	    }
+    }
+    public override void OnCollision(Entity other)
+    {
+    
     }
 	public override void Draw(Texture2D texture, SpriteBatch spriteBatch)
     {

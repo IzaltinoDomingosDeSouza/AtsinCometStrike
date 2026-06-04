@@ -29,12 +29,16 @@ public static class Global
 	public static readonly Rectangle smallCometAtlas = new Rectangle(406, 234, 28, 28);
 	public static readonly Rectangle medCometAtlas = new Rectangle(651, 447, 43, 43);
 	public static readonly Rectangle bigCometAtlas = new Rectangle(224, 664, 101, 84);
+	
+	public static int Score = 0;
 }
 
 public class MainGame : Game
 {
     private GraphicsDeviceManager _graphics;
     private SpriteBatch _spriteBatch;
+    
+    ScrollableBackground _scrollableBackground = new();
     
     private Texture2D _gameTexture;
     
@@ -44,7 +48,7 @@ public class MainGame : Game
     
     private SoundEffect _shootSound;
 
-    private float _timer = 0f;
+    private float _cometSpawnTimer = 0f;
     private float _cometSpawn = 1f;
     private Random _random = new Random();
 
@@ -63,6 +67,8 @@ public class MainGame : Game
 		_spaceship.Initialize(Global.SpaceshipAtlas,new Vector2(Global.SpaceshipAtlas.Width, Global.ScreenSize.Y / 2f),MathHelper.ToRadians(-90));
 
 		_entitiesPool.Add(_spaceship);
+		
+		_scrollableBackground.Initialize();
 
         base.Initialize();
     }
@@ -74,6 +80,8 @@ public class MainGame : Game
 		_gameTexture = Content.Load<Texture2D>("AtlasTexture/Game");
 		
 		_shootSound = Content.Load<SoundEffect>("SoundEffects/Projectile");
+		
+		_scrollableBackground.LoadContent(Content.Load<Texture2D>("AtlasTexture/Background"),new Rectangle(256, 256, 256, 256));
     }
     protected override void Update(GameTime gameTime)
     {
@@ -81,6 +89,8 @@ public class MainGame : Game
             Exit();
 
         float elapsed = (float)gameTime.ElapsedGameTime.TotalSeconds;
+        
+        _scrollableBackground.Update(elapsed);
 
         KeyboardState kState = Keyboard.GetState();
         
@@ -99,62 +109,87 @@ public class MainGame : Game
 			_shootSound.Play();
 		}
 		
-		cometWaveUpdate(elapsed);
+		CometWaveUpdate(elapsed);
         
 		foreach(var entity in _entitiesPool)
 		{
 			entity.Update(elapsed);
 		}
         
+        CollisionHandler(elapsed);
+        
+		Console.WriteLine($"Score : {Global.Score}");
+        
         base.Update(gameTime);
     }
     
-    void cometWaveUpdate(float deltaTime)
+    void CometWaveUpdate(float deltaTime)
     {
-    		if(_timer <= 0f)
+    		if(_cometSpawnTimer <= 0f)
     		{
-    			_timer = _cometSpawn;
+    			_cometSpawnTimer = _cometSpawn;
     			
     			var comet = new Comet();
     			
     			float cometType = _random.Next(1, 5);
     			Rectangle cometAtlas = new Rectangle();
     			float movementSpeedBase = 250f;
+    			float cometAngle = _random.Next(1, 360);	//this help to create varition
     			switch(cometType)
     			{
     				case 1:
     					cometAtlas = Global.tinyCometAtlas;
-    					comet.MovementSpeed = movementSpeedBase * 1.0f;
+    					comet.MovementSpeed = (movementSpeedBase * 1.0f) + _scrollableBackground.ScrollSpeed;
+    					comet.Strength = 0.1f;
     				break;
     				case 2:
     					cometAtlas = Global.smallCometAtlas;
-    					comet.MovementSpeed = movementSpeedBase * 0.75f;
+    					comet.MovementSpeed = (movementSpeedBase * 0.75f) + _scrollableBackground.ScrollSpeed;
+    					comet.Strength = 0.25f;
     				break;
     				case 3:
     					cometAtlas = Global.medCometAtlas;
-    					comet.MovementSpeed = movementSpeedBase * 0.50f;
+    					comet.MovementSpeed = (movementSpeedBase * 0.50f) + _scrollableBackground.ScrollSpeed;
+    					comet.Strength = 0.50f;
     				break;
     				case 4:
     					cometAtlas = Global.bigCometAtlas;
-    					comet.MovementSpeed = movementSpeedBase * 0.25f;
+    					comet.MovementSpeed = (movementSpeedBase * 0.25f) + _scrollableBackground.ScrollSpeed;
+    					comet.Strength = 0.75f;
     				break;
     			}
     			
-    			var _spawnArea = new Rectangle((int)Global.ScreenSize.X, 100,(int)Global.ScreenSize.X + 100,(int)Global.ScreenSize.Y-100);
+    			var _spawnArea = new Rectangle((int)Global.ScreenSize.X, 100,(int)Global.ScreenSize.X + 200,(int)Global.ScreenSize.Y-100);
     			var x = _random.Next(_spawnArea.X,_spawnArea.Width);
             var y = _random.Next(_spawnArea.Y,_spawnArea.Height);
-			comet.Initialize(cometAtlas, new Vector2(x,y), MathHelper.ToRadians(-90));
+			comet.Initialize(cometAtlas, new Vector2(x,y),MathHelper.ToRadians(cometAngle));
 			_entitiesPool.Add(comet);
     		}
     		
-    		_timer -= deltaTime;
+    		_cometSpawnTimer -= deltaTime;
     }
-    
+    void CollisionHandler(float deltaTime)
+    {
+    		foreach(var entity1 in _entitiesPool)
+    		{
+    			if(!entity1.IsActive) continue;
+    			foreach(var entity2 in _entitiesPool)
+    			{
+    				if(!entity2.IsActive || ReferenceEquals(entity1, entity2)) continue;
+    				if(entity1.GetBounds().Intersects(entity2.GetBounds()))
+    				{
+    					entity1.OnCollision(entity2);
+    				}
+    			}
+    		}
+    }
     protected override void Draw(GameTime gameTime)
     {
         GraphicsDevice.Clear(Color.CornflowerBlue);
 
         _spriteBatch.Begin();
+        
+        _scrollableBackground.Draw(_spriteBatch,Global.ScreenSize);
         
 		foreach(var entity in _entitiesPool)
 		{

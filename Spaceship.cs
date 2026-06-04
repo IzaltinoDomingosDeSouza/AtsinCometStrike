@@ -20,11 +20,17 @@ public class Spaceship : Entity
     }
 	public override void Update(float deltaTime)
     {
+    		if(!IsActive) return;
+    		
     		base.Update(deltaTime);
         Position = Global.KeepOnScreen(Position, Origin);
         
 		if(_timer > 0)
 			_timer -= deltaTime;
+    }
+    public override void OnCollision(Entity other)
+    {
+    
     }
     public void MoveUp(float deltaTime)
 	{
@@ -35,7 +41,8 @@ public class Spaceship : Entity
         Position.Y += _movementSpeed * deltaTime;
     }
     public bool CanShoot()
-    {	if(_timer > 0) return false;
+    {
+    		if(_timer > 0 || !IsActive) return false;
     		
     		_timer = _shootCooldown;
     		return true;

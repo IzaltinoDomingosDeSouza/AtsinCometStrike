@@ -7,6 +7,8 @@ namespace AtsinCometStrike;
 public class Comet : Entity
 {
 	public float MovementSpeed = 250f;
+	public float Strength = 1.0f;
+	public int Health = 100;
 	
 	public override void Initialize(Rectangle atlas, Vector2 Position, float Angle = 0)
     {
@@ -16,6 +18,21 @@ public class Comet : Entity
     {
         base.Update(deltaTime);
         Position.X -= MovementSpeed * deltaTime;
+    }
+    public override void OnCollision(Entity other)
+    {
+    		if(other is Projectile projectile)
+    		{
+    			projectile.Destroy();
+    			int damageAmount = (int)(projectile.DemageAmount / Strength);
+    			Health -= damageAmount;
+    			Global.Score += (int)(damageAmount * 5);
+			if(Health <= 0)
+			{
+				Global.Score += (int)(150 * Strength);
+				Destroy();
+			}
+    		}
     }
 	public override void Draw(Texture2D texture, SpriteBatch spriteBatch)
     {
