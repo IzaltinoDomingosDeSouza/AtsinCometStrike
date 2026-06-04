@@ -23,8 +23,12 @@ public static class Global
 			   position.Y >= origin.Y && 
 			   position.Y <= ScreenSize.Y - origin.Y;
 	}
-    public static readonly Rectangle SpaceshipAtlas = new Rectangle(518, 493, 82, 84);
-    public static readonly Rectangle ProjectileAtlas = new Rectangle(856, 421, 9, 54);
+	public static readonly Rectangle SpaceshipAtlas = new Rectangle(518, 493, 82, 84);
+	public static readonly Rectangle ProjectileAtlas = new Rectangle(856, 421, 9, 54);
+	public static readonly Rectangle tinyCometAtlas = new Rectangle(346, 814, 18, 18);
+	public static readonly Rectangle smallCometAtlas = new Rectangle(406, 234, 28, 28);
+	public static readonly Rectangle medCometAtlas = new Rectangle(651, 447, 43, 43);
+	public static readonly Rectangle bigCometAtlas = new Rectangle(224, 664, 101, 84);
 }
 
 public class MainGame : Game
@@ -53,9 +57,14 @@ public class MainGame : Game
     {
 		_spaceship = new Spaceship();
 		_spaceship.Initialize(Global.SpaceshipAtlas,new Vector2(Global.SpaceshipAtlas.Width, Global.ScreenSize.Y / 2f),MathHelper.ToRadians(-90));
-		
+
 		_entitiesPool.Add(_spaceship);
-		
+
+		var tinyComet = new Comet();
+		tinyComet.Initialize(Global.tinyCometAtlas,new Vector2(Global.ScreenSize.X - Global.tinyCometAtlas.Width, Global.ScreenSize.Y / 2f),MathHelper.ToRadians(-90));
+
+		_entitiesPool.Add(tinyComet);
+
         base.Initialize();
     }
 
