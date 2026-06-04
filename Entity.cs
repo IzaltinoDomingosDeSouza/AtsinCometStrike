@@ -20,6 +20,11 @@ public abstract class Entity
     		this.Angle = Angle;
         this.Origin = new Vector2(atlas.Width / 2f, atlas.Height / 2f);
     }
+    public virtual void Reset(Rectangle atlas, Vector2 Position, float Angle = 0)
+    {
+		Initialize(atlas,Position,Angle);
+		IsActive = true;
+    }
     
 	public virtual void Update(float deltaTime) { }
 	

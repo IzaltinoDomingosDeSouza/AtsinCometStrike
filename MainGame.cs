@@ -14,7 +14,15 @@ public static class Global
         return new Vector2(MathHelper.Clamp(position.X, origin.X, ScreenSize.X - origin.X),
                            MathHelper.Clamp(position.Y, origin.Y, ScreenSize.Y - origin.Y));
     }
+	public static bool IsInsideOfScreen(Vector2 position, Vector2 origin)
+	{
+		return position.X >= origin.X && 
+			   position.X <= ScreenSize.X - origin.X &&
+			   position.Y >= origin.Y && 
+			   position.Y <= ScreenSize.Y - origin.Y;
+	}
     public static readonly Rectangle SpaceshipAtlas = new Rectangle(518, 493, 82, 84);
+    public static readonly Rectangle ProjectileAtlas = new Rectangle(856, 421, 9, 54);
 }
 
 public class MainGame : Game
@@ -25,6 +33,8 @@ public class MainGame : Game
     private Texture2D _gameTexture;
     
     private Spaceship _spaceship;
+    
+    private List<Entity> _entitiesPool = new(); 
     
     public MainGame()
     {
@@ -39,6 +49,9 @@ public class MainGame : Game
     {
 		_spaceship = new Spaceship();
 		_spaceship.Initialize(Global.SpaceshipAtlas,new Vector2(100,100),MathHelper.ToRadians(-90));
+		
+		_entitiesPool.Add(_spaceship);
+		
         base.Initialize();
     }
 
@@ -57,7 +70,24 @@ public class MainGame : Game
 
         KeyboardState kState = Keyboard.GetState();
         
-        _spaceship.Update(elapsed);
+		if(kState.IsKeyDown(Keys.W))
+			_spaceship.MoveUp(elapsed);
+		if(kState.IsKeyDown(Keys.S))
+			_spaceship.MoveDown(elapsed);
+			
+		if(kState.IsKeyDown(Keys.Space) && _spaceship.CanShoot())
+		{
+			var projectile = new Projectile();
+			projectile.Initialize(Global.ProjectileAtlas,
+								  new Vector2(_spaceship.Position.X + _spaceship.Origin.X,_spaceship.Position.Y),
+								  MathHelper.ToRadians(90));
+			_entitiesPool.Add(projectile);
+		}
+        
+		foreach(var entity in _entitiesPool)
+		{
+			entity.Update(elapsed);
+		}
         
         base.Update(gameTime);
     }
@@ -67,7 +97,10 @@ public class MainGame : Game
 
         _spriteBatch.Begin();
         
-        _spaceship.Draw(_gameTexture,_spriteBatch);
+		foreach(var entity in _entitiesPool)
+		{
+			entity.Draw(_gameTexture,_spriteBatch);
+		}
         
         _spriteBatch.End();
 
