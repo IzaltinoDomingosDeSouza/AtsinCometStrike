@@ -6,7 +6,7 @@ namespace AtsinCometStrike;
 
 public class Comet : Entity
 {
-	private float movementSpeed = 250f;
+	public float MovementSpeed = 250f;
 	
 	public override void Initialize(Rectangle atlas, Vector2 Position, float Angle = 0)
     {
@@ -15,7 +15,7 @@ public class Comet : Entity
 	public override void Update(float deltaTime)
     {
         base.Update(deltaTime);
-        Position.X -= movementSpeed * deltaTime;
+        Position.X -= MovementSpeed * deltaTime;
     }
 	public override void Draw(Texture2D texture, SpriteBatch spriteBatch)
     {
