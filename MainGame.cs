@@ -31,6 +31,7 @@ public static class Global
 	public static readonly Rectangle bigCometAtlas = new Rectangle(224, 664, 101, 84);
 	
 	public static int Score = 0;
+	public static float ScrollInitialSpeed = 128f;
 }
 
 public class MainGame : Game
@@ -51,6 +52,9 @@ public class MainGame : Game
     private float _cometSpawnTimer = 0f;
     private float _cometSpawn = 1f;
     private Random _random = new Random();
+    
+    private float _levelCountdownTimer;
+    private float _levelTimerAmount = 10 * 60.0f; //10 minutes
 
     public MainGame()
     {
@@ -68,7 +72,9 @@ public class MainGame : Game
 
 		_entitiesPool.Add(_spaceship);
 		
-		_scrollableBackground.Initialize();
+		_scrollableBackground.Initialize(Global.ScrollInitialSpeed);
+		
+		_levelCountdownTimer = _levelTimerAmount;
 
         base.Initialize();
     }
@@ -89,6 +95,8 @@ public class MainGame : Game
             Exit();
 
         float elapsed = (float)gameTime.ElapsedGameTime.TotalSeconds;
+        
+        _levelCountdownTimer -= elapsed;
         
         _scrollableBackground.Update(elapsed);
 
@@ -118,7 +126,9 @@ public class MainGame : Game
         
         CollisionHandler(elapsed);
         
-		Console.WriteLine($"Score : {Global.Score}");
+        GameLevelUpdate(elapsed);
+        
+		Console.WriteLine($"Score : {Global.Score} | Time : {_levelCountdownTimer} ");
         
         base.Update(gameTime);
     }
@@ -181,6 +191,29 @@ public class MainGame : Game
     					entity1.OnCollision(entity2);
     				}
     			}
+    		}
+    }
+    void GameLevelUpdate(float deltaTime)
+    {
+        if(_levelCountdownTimer <= 0)
+        {
+        		//TODO Show score amount and game over screen
+        }
+        if(!_spaceship.IsActive)
+        {
+        		//TODO Show game over screen
+        }
+    
+    		if(_levelCountdownTimer < 2f*60f)
+    		{
+    			_scrollableBackground.ScrollSpeed = Global.ScrollInitialSpeed * 2f;
+    		}
+    		if(_levelCountdownTimer < 5f*60f)
+    		{
+    			_scrollableBackground.ScrollSpeed = Global.ScrollInitialSpeed * 1.5f;
+    		}else
+    		{
+    			_scrollableBackground.ScrollSpeed = Global.ScrollInitialSpeed;
     		}
     }
     protected override void Draw(GameTime gameTime)

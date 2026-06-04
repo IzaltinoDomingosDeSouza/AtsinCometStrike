@@ -33,6 +33,11 @@ public class Comet : Entity
 				Destroy();
 			}
     		}
+    		if(other is Spaceship spaceship)
+    		{
+    			spaceship.Health -= 1;
+    			Destroy();
+    		}
     }
 	public override void Draw(Texture2D texture, SpriteBatch spriteBatch)
     {

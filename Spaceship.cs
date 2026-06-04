@@ -9,6 +9,8 @@ public class Spaceship : Entity
 	private float _movementSpeed = 100f;
 	private float _shootCooldown = 0.3f;
 	private float _timer = 0f;
+	public int DemageAmount = 25;
+	public int Health = 3;
 	
 	public override void Initialize(Rectangle atlas, Vector2 Position, float Angle = 0)
     {
@@ -27,6 +29,9 @@ public class Spaceship : Entity
         
 		if(_timer > 0)
 			_timer -= deltaTime;
+		
+		if(Health <= 0)
+			Destroy();
     }
     public override void OnCollision(Entity other)
     {
