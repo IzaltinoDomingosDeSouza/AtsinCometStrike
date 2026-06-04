@@ -1,12 +1,12 @@
 
 #----------------------------- Global Properties ----------------------------#
 
-/outputDir:bin/$(Platform)
-/intermediateDir:obj/$(Platform)
-/platform:DesktopGL
+/outputDir:bin
+/intermediateDir:obj
+/platform:Windows
 /config:
 /profile:Reach
-/compress:True
+/compress:False
 
 #-------------------------------- References --------------------------------#
 
@@ -36,4 +36,10 @@
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
 /build:AtlasTexture/Game.png
+
+#begin SoundEffects/Projectile.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:SoundEffects/Projectile.wav
 

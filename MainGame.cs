@@ -1,6 +1,8 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using Microsoft.Xna.Framework.Audio;
+
 using System.Collections.Generic;
 using System;
 
@@ -36,6 +38,8 @@ public class MainGame : Game
     
     private List<Entity> _entitiesPool = new(); 
     
+    private SoundEffect _shootSound;
+    
     public MainGame()
     {
         _graphics = new GraphicsDeviceManager(this);
@@ -48,7 +52,7 @@ public class MainGame : Game
     protected override void Initialize()
     {
 		_spaceship = new Spaceship();
-		_spaceship.Initialize(Global.SpaceshipAtlas,new Vector2(100,100),MathHelper.ToRadians(-90));
+		_spaceship.Initialize(Global.SpaceshipAtlas,new Vector2(Global.SpaceshipAtlas.Width, Global.ScreenSize.Y / 2f),MathHelper.ToRadians(-90));
 		
 		_entitiesPool.Add(_spaceship);
 		
@@ -60,6 +64,8 @@ public class MainGame : Game
         _spriteBatch = new SpriteBatch(GraphicsDevice);
 		
 		_gameTexture = Content.Load<Texture2D>("AtlasTexture/Game");
+		
+		_shootSound = Content.Load<SoundEffect>("SoundEffects/Projectile");
     }
     protected override void Update(GameTime gameTime)
     {
@@ -82,6 +88,7 @@ public class MainGame : Game
 								  new Vector2(_spaceship.Position.X + _spaceship.Origin.X,_spaceship.Position.Y),
 								  MathHelper.ToRadians(90));
 			_entitiesPool.Add(projectile);
+			_shootSound.Play();
 		}
         
 		foreach(var entity in _entitiesPool)
